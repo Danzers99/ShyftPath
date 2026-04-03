@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShyftPath - NationsBenefits Agent Journey Tracker</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        dark: { 900: '#0b1120', 800: '#111827', 700: '#1e293b', 600: '#334155' },
+        teal: { 400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488' },
+        accent: { 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7' }
+      }
+    }
+  }
+}
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  body { font-family: 'Inter', system-ui, sans-serif; }
+  .fade-in { animation: fadeIn 0.4s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
+  @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.4); } 50% { box-shadow: 0 0 20px 4px rgba(20, 184, 166, 0.2); } }
+  .progress-fill { transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+  .slide-up { animation: slideUp 0.5s ease-out; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
+  .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: #111827; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  .fab-email { position: fixed; bottom: 24px; right: 24px; z-index: 50; }
+</style>
+</head>
+<body class="bg-dark-900 text-gray-200 min-h-screen">
+
+<!-- Floating Email Button -->
+<a href="mailto:davidmorales@shyftoff.com?subject=ShyftPath%20Question%20-%20NationsBenefits%20Onboarding&body=Hi%20David%2C%0A%0AI'm%20currently%20in%20Phase%20__%20and%20I%20have%20a%20question%20about...%0A%0A" class="fab-email flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white font-semibold px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 group">
+  <span class="text-xl">&#9993;&#65039;</span>
+  <span class="hidden sm:inline">Email David</span>
+  <span class="sm:hidden text-xs">Help</span>
+</a>
+
+<!-- Top Progress Bar (hidden on landing) -->
+<div id="topProgressBar" class="fixed top-0 left-0 right-0 z-40 bg-dark-800/95 backdrop-blur border-b border-dark-600 hidden">
+  <div class="max-w-3xl mx-auto px-4 py-2">
+    <div class="flex items-center justify-between text-xs text-gray-400 mb-1">
+      <span id="progressLabel">Getting started...</span>
+      <span id="progressPercent">0%</span>
+    </div>
+    <div class="w-full bg-dark-600 rounded-full h-2">
+      <div id="progressBar" class="progress-fill bg-gradient-to-r from-teal-500 to-accent-500 h-2 rounded-full" style="width:0%"></div>
+    </div>
+    <div class="flex justify-between mt-1.5 gap-1">
+      <div class="phase-dot flex-1 text-center"><span class="inline-block w-2 h-2 rounded-full bg-dark-600 phase-indicator" data-phase="1"></span></div>
+      <div class="phase-dot flex-1 text-center"><span class="inline-block w-2 h-2 rounded-full bg-dark-600 phase-indicator" data-phase="2"></span></div>
+      <div class="phase-dot flex-1 text-center"><span class="inline-block w-2 h-2 rounded-full bg-dark-600 phase-indicator" data-phase="3"></span></div>
+      <div class="phase-dot flex-1 text-center"><span class="inline-block w-2 h-2 rounded-full bg-dark-600 phase-indicator" data-phase="4"></span></div>
+      <div class="phase-dot flex-1 text-center"><span class="inline-block w-2 h-2 rounded-full bg-dark-600 phase-indicator" data-phase="5"></span></div>
+      <div class="phase-dot flex-1 text-center"><span class="inline-block w-2 h-2 rounded-full bg-dark-600 phase-indicator" data-phase="6"></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Navigation -->
+<nav id="bottomNav" class="fixed bottom-0 left-0 right-0 z-40 bg-dark-800/95 backdrop-blur border-t border-dark-600 hidden">
+  <div class="max-w-3xl mx-auto flex justify-around py-2 px-2 text-xs">
+    <button onclick="showPage('checklist')" class="nav-btn flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg hover:bg-dark-700 transition" data-nav="checklist">
+      <span class="text-lg">&#9745;&#65039;</span><span>Checklist</span>
+    </button>
+    <button onclick="showPage('control')" class="nav-btn flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg hover:bg-dark-700 transition" data-nav="control">
+      <span class="text-lg">&#9878;&#65039;</span><span>Control</span>
+    </button>
+    <button onclick="showPage('support')" class="nav-btn flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg hover:bg-dark-700 transition" data-nav="support">
+      <span class="text-lg">&#128172;</span><span>Support</span>
+    </button>
+    <button onclick="showPage('glossary')" class="nav-btn flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg hover:bg-dark-700 transition" data-nav="glossary">
+      <span class="text-lg">&#128214;</span><span>Glossary</span>
+    </button>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT AREA -->
+<main id="app" class="pb-20">
+
+<!-- ==================== LANDING SCREEN ==================== -->
+<section id="landing" class="min-h-screen flex items-center justify-center px-4">
+  <div class="max-w-2xl mx-auto text-center fade-in">
+    <div class="mb-6">
+      <span class="text-6xl sm:text-7xl">&#128640;</span>
+    </div>
+    <h1 class="text-4xl sm:text-5xl font-extrabold mb-3 bg-gradient-to-r from-teal-400 to-accent-400 bg-clip-text text-transparent">ShyftPath</h1>
+    <p class="text-lg sm:text-xl text-gray-300 font-medium mb-2">NationsBenefits Agent Journey Tracker</p>
+    <p class="text-gray-400 mb-8 max-w-lg mx-auto">Find exactly where you are in the NationsBenefits onboarding process. Answer 6 quick yes/no questions and we'll tell you your current phase + exactly what to do next.</p>
+
+    <button onclick="startQuiz()" class="pulse-glow bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg transition-all duration-200 inline-flex items-center gap-2">
+      Start My Journey <span>&#128640;</span>
+    </button>
+
+    <p class="text-xs text-gray-500 mt-6">Built from the official NationsBenefits Agent Roadmap &bull; Updated March 2026</p>
+
+    <!-- Important Notes Card -->
+    <div class="mt-10 bg-dark-800 border border-dark-600 rounded-xl p-5 text-left max-w-lg mx-auto">
+      <h3 class="text-sm font-bold text-yellow-400 mb-3 flex items-center gap-2">&#9888;&#65039; Important &mdash; Read This First</h3>
+      <ul class="text-sm text-gray-400 space-y-2">
+        <li>&#8226; You do <strong class="text-gray-200">NOT</strong> need NationsBenefits credentials to start your coursework. Start studying right away!</li>
+        <li>&#8226; You do <strong class="text-gray-200">NOT</strong> need to wait for your background check to clear before starting the Certification Course.</li>
+        <li>&#8226; After completing certification, you do <strong class="text-gray-200">NOT</strong> need to complete any other courses. You'll be placed on a list for credentials.</li>
+      </ul>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="mt-6 flex flex-wrap justify-center gap-3 text-sm">
+      <button onclick="showPage('checklist')" class="text-teal-400 hover:text-teal-300 underline underline-offset-2">Full Checklist</button>
+      <span class="text-dark-600">|</span>
+      <button onclick="showPage('support')" class="text-teal-400 hover:text-teal-300 underline underline-offset-2">Get Help</button>
+      <span class="text-dark-600">|</span>
+      <button onclick="showPage('glossary')" class="text-teal-400 hover:text-teal-300 underline underline-offset-2">Glossary</button>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== QUIZ SCREEN ==================== -->
+<section id="quiz" class="min-h-screen flex items-center justify-center px-4 hidden">
+  <div class="max-w-lg mx-auto w-full fade-in">
+    <div class="text-center mb-8">
+      <span class="text-3xl">&#128640;</span>
+      <h2 class="text-2xl font-bold mt-2">Let's Find Your Phase</h2>
+      <p class="text-gray-400 text-sm mt-1">Question <span id="qNum">1</span> of 6</p>
+      <div class="w-full bg-dark-700 rounded-full h-1.5 mt-3">
+        <div id="quizProgress" class="progress-fill bg-teal-500 h-1.5 rounded-full" style="width:16.6%"></div>
+      </div>
+    </div>
+
+    <div id="questionCard" class="bg-dark-800 border border-dark-600 rounded-2xl p-6 sm:p-8 slide-up">
+      <p id="questionText" class="text-lg font-semibold mb-6"></p>
+      <div class="flex gap-3">
+        <button onclick="answerQuestion(true)" class="flex-1 bg-teal-600 hover:bg-teal-500 text-white font-bold py-3 rounded-xl transition-all duration-200 text-lg">Yes</button>
+        <button onclick="answerQuestion(false)" class="flex-1 bg-dark-600 hover:bg-dark-700 border border-dark-600 text-gray-200 font-bold py-3 rounded-xl transition-all duration-200 text-lg">No</button>
+      </div>
+    </div>
+
+    <button onclick="goToLanding()" class="mt-6 text-sm text-gray-500 hover:text-gray-300 transition mx-auto block">&larr; Back to start</button>
+  </div>
+</section>
+
+<!-- ==================== RESULTS SCREEN ==================== -->
+<section id="results" class="hidden pt-16 pb-24 px-4">
+  <div class="max-w-2xl mx-auto fade-in" id="resultsContent"></div>
+</section>
+
+<!-- ==================== CHECKLIST PAGE ==================== -->
+<section id="checklist" class="hidden pt-16 pb-24 px-4">
+  <div class="max-w-2xl mx-auto fade-in">
+    <button onclick="goBack()" class="text-sm text-gray-500 hover:text-gray-300 mb-4 inline-block">&larr; Back</button>
+    <h2 class="text-3xl font-bold mb-2 flex items-center gap-2">&#9745;&#65039; Full Checklist</h2>
+    <p class="text-gray-400 mb-6">Track your progress from start to finish.</p>
+
+    <!-- Phase 1 -->
+    <div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+      <h3 class="font-bold text-teal-400 mb-3">Phase 1: Apply & Opt In</h3>
+      <label class="flex items-start gap-3 mb-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Apply through the ShyftOff App</span></label>
+      <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Opt in to the NationsBenefits campaign</span></label>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+      <h3 class="font-bold text-teal-400 mb-3">Phase 2: Background Check</h3>
+      <label class="flex items-start gap-3 mb-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Submit and complete background check</span></label>
+      <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Receive completion email from Yardstik</span></label>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+      <h3 class="font-bold text-teal-400 mb-3">Phase 3: Certification Coursework</h3>
+      <label class="flex items-start gap-3 mb-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Access certification course in the ShyftOff App</span></label>
+      <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Complete full course within 5 days</span></label>
+    </div>
+
+    <!-- Phase 4 -->
+    <div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+      <h3 class="font-bold text-teal-400 mb-3">Phase 4: Credential Request & Waiting</h3>
+      <label class="flex items-start gap-3 mb-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Monitor ShyftOff App daily for updates</span></label>
+      <label class="flex items-start gap-3 mb-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Check email (including spam/junk) for credentials</span></label>
+      <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Receive NationsBenefits credentials</span></label>
+    </div>
+
+    <!-- Phase 5 -->
+    <div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+      <h3 class="font-bold text-teal-400 mb-3">Phase 5: Pre-Production &mdash; Setup & Training</h3>
+      <label class="flex items-start gap-3 mb-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Complete Pre-Production Course (primary setup guide)</span></label>
+      <label class="flex items-start gap-3 mb-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Complete Self-Guided Navigation course</span></label>
+      <label class="flex items-start gap-3 mb-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">All requirements done within 3 days of receiving credentials</span></label>
+      <label class="flex items-start gap-3 mb-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">System access confirmed and tested</span></label>
+      <h4 class="font-semibold text-gray-300 mt-4 mb-2 text-sm">Litmos Training Courses:</h4>
+      <label class="flex items-start gap-3 mb-1.5 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Anti-money Laundering Awareness 4.0 (US)</span></label>
+      <label class="flex items-start gap-3 mb-1.5 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Cyber Security Overview 2.0</span></label>
+      <label class="flex items-start gap-3 mb-1.5 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Health Risk Assessments (HRAs)</span></label>
+      <label class="flex items-start gap-3 mb-1.5 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">HIPAA Privacy and Security Basics 5.0 (US)</span></label>
+      <label class="flex items-start gap-3 mb-1.5 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Identity Theft Training 2026</span></label>
+      <label class="flex items-start gap-3 mb-1.5 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Information Security Basics 3.0</span></label>
+      <label class="flex items-start gap-3 mb-1.5 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Leading Learning - Payment Card Industry Data Security Standards (PCI-DSS) 2.0</span></label>
+      <label class="flex items-start gap-3 mb-1.5 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Medicare Parts C & D - Combating Fraud, Waste & Abuse 2026</span></label>
+      <label class="flex items-start gap-3 mb-1.5 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Medicare Parts C & D - Cultural Competency 2026</span></label>
+      <label class="flex items-start gap-3 mb-1.5 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Medicare Parts C & D - General Compliance 2026</span></label>
+      <label class="flex items-start gap-3 mb-1.5 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Nations of the Stars - Journey into 2026</span></label>
+      <label class="flex items-start gap-3 mb-1.5 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Sexual Harassment Prevention 3.0 (US)</span></label>
+      <label class="flex items-start gap-3 mb-1.5 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Triple-S Introduction</span></label>
+      <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">UDAAP Training 2026</span></label>
+    </div>
+
+    <!-- Phase 6 -->
+    <div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+      <h3 class="font-bold text-teal-400 mb-3">Phase 6: Production</h3>
+      <label class="flex items-start gap-3 mb-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Complete Navigation Meeting</span></label>
+      <label class="flex items-start gap-3 mb-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Receive When I Work invite</span></label>
+      <label class="flex items-start gap-3 mb-2 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Log into When I Work and pick up shifts</span></label>
+      <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" class="mt-1 accent-teal-500 w-4 h-4"><span class="text-sm">Take live calls using NationsBenefits systems</span></label>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CONTROL PAGE ==================== -->
+<section id="control" class="hidden pt-16 pb-24 px-4">
+  <div class="max-w-2xl mx-auto fade-in">
+    <button onclick="goBack()" class="text-sm text-gray-500 hover:text-gray-300 mb-4 inline-block">&larr; Back</button>
+    <h2 class="text-3xl font-bold mb-2 flex items-center gap-2">&#9878;&#65039; What's In Your Control vs. What's Not</h2>
+    <p class="text-gray-400 mb-6">It helps to know which parts of this process you can move along and which parts just take time.</p>
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div class="bg-dark-800 border border-teal-600/40 rounded-xl p-5">
+        <h3 class="font-bold text-teal-400 mb-4 text-lg">In Your Control</h3>
+        <ul class="space-y-3 text-sm">
+          <li class="flex items-start gap-2"><span class="text-teal-400 mt-0.5">&#9632;</span> Completing your application promptly</li>
+          <li class="flex items-start gap-2"><span class="text-teal-400 mt-0.5">&#9632;</span> Starting coursework right away (don't wait for background check)</li>
+          <li class="flex items-start gap-2"><span class="text-teal-400 mt-0.5">&#9632;</span> Finishing certification within 5 days</li>
+          <li class="flex items-start gap-2"><span class="text-teal-400 mt-0.5">&#9632;</span> Checking the ShyftOff App & email daily</li>
+          <li class="flex items-start gap-2"><span class="text-teal-400 mt-0.5">&#9632;</span> Completing pre-production requirements within 3 days</li>
+          <li class="flex items-start gap-2"><span class="text-teal-400 mt-0.5">&#9632;</span> Asking for help in the right Rocket Relay rooms</li>
+        </ul>
+      </div>
+      <div class="bg-dark-800 border border-red-500/30 rounded-xl p-5">
+        <h3 class="font-bold text-red-400 mb-4 text-lg">Not in Your Control</h3>
+        <ul class="space-y-3 text-sm">
+          <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">&#9632;</span> Background check processing time</li>
+          <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">&#9632;</span> When NationsBenefits issues your credentials (up to 7 days)</li>
+          <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">&#9632;</span> System access activation timing</li>
+          <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">&#9632;</span> When I Work invite timing</li>
+          <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">&#9632;</span> Navigation Meeting scheduling</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bg-dark-800 border border-yellow-500/30 rounded-xl p-5 mt-6">
+      <h3 class="font-bold text-yellow-400 mb-2">&#128170; Support Sessions &mdash; We've Got You</h3>
+      <p class="text-sm text-gray-400 mb-3">ShyftOff runs live support sessions throughout the Coursework and Pre-Production phases. These sessions are designed to:</p>
+      <ul class="text-sm text-gray-400 space-y-1 mb-3">
+        <li>&#8226; Bridge any gaps in your training and help you understand tricky topics.</li>
+        <li>&#8226; Tackle technical issues so you're not stuck troubleshooting alone.</li>
+        <li>&#8226; Build your confidence before and during your first live calls.</li>
+      </ul>
+      <p class="text-sm text-gray-400 mb-2">Some sessions include your first time taking actual calls with a trainer or support person listening in. They're right there to guide you and assist you in the moment.</p>
+      <p class="text-sm font-semibold text-teal-400">You will not be thrown into calls alone. Your first calls are a supported, guided experience.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SUPPORT PAGE ==================== -->
+<section id="support" class="hidden pt-16 pb-24 px-4">
+  <div class="max-w-2xl mx-auto fade-in">
+    <button onclick="goBack()" class="text-sm text-gray-500 hover:text-gray-300 mb-4 inline-block">&larr; Back</button>
+    <h2 class="text-3xl font-bold mb-2 flex items-center gap-2">&#128172; Support & Help</h2>
+    <p class="text-gray-400 mb-6">You're not doing this by yourself. Here's where to go when you need a hand.</p>
+
+    <!-- Email David Card -->
+    <div class="bg-gradient-to-r from-teal-600/20 to-accent-600/20 border border-teal-500/40 rounded-xl p-5 mb-4">
+      <h3 class="font-bold text-teal-400 mb-2">&#9993;&#65039; Email the Roadmap Creator</h3>
+      <p class="text-sm text-gray-400 mb-3">Have a question about the onboarding process? Reach out directly to David Morales.</p>
+      <a href="mailto:davidmorales@shyftoff.com?subject=ShyftPath%20Question%20-%20NationsBenefits%20Onboarding&body=Hi%20David%2C%0A%0AI'm%20currently%20in%20Phase%20__%20and%20I%20have%20a%20question%20about...%0A%0A" class="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white font-semibold px-5 py-2.5 rounded-lg transition">
+        &#9993;&#65039; Email David (Roadmap Creator)
+      </a>
+    </div>
+
+    <div class="space-y-4">
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+        <h3 class="font-bold text-teal-400 mb-2">&#128640; Rocket Relay Rooms</h3>
+        <ul class="text-sm text-gray-400 space-y-2">
+          <li><strong class="text-gray-200">During Certification:</strong> Rocket Relay &mdash; Certification room</li>
+          <li><strong class="text-gray-200">During Pre-Production:</strong> Rocket Relay &mdash; Pre-Production room</li>
+          <li><strong class="text-gray-200">During Production:</strong> Rocket Relay &mdash; Production room</li>
+        </ul>
+      </div>
+
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+        <h3 class="font-bold text-teal-400 mb-2">&#128241; ShyftOff App</h3>
+        <p class="text-sm text-gray-400">Your main hub for updates. Check it daily for application status, credentials, and more.</p>
+      </div>
+
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+        <h3 class="font-bold text-teal-400 mb-2">&#9742;&#65039; NationsBenefits IT Support</h3>
+        <p class="text-sm text-gray-400 mb-2">For technical issues with NationsBenefits systems (login problems, tools not loading, access errors, etc.):</p>
+        <a href="tel:888-320-1001" class="text-2xl font-bold text-accent-400 hover:text-accent-300 transition">888-320-1001</a>
+        <p class="text-xs text-gray-500 mt-1">Keep this number handy &mdash; especially once you have your credentials.</p>
+      </div>
+
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+        <h3 class="font-bold text-teal-400 mb-2">&#127891; Live Support Sessions</h3>
+        <p class="text-sm text-gray-400">ShyftOff runs live support sessions throughout the Coursework and Pre-Production phases. Attend them &mdash; they're there for you! Your first calls are a supported, guided experience.</p>
+      </div>
+    </div>
+
+    <div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mt-6">
+      <h3 class="font-bold text-teal-400 mb-2">&#128161; Set Up Your Rocket Relay Profile</h3>
+      <p class="text-sm text-gray-400 mb-2">Please update your Rocket Relay display name to your <strong class="text-gray-200">real first and last name</strong>. No nicknames, no abbreviations, no initials &mdash; your actual legal first and last name.</p>
+      <p class="text-sm text-gray-500">How: Open Rocket Relay &rarr; bottom-left corner &rarr; <strong>Account</strong> &rarr; <strong>Display Name</strong> &rarr; update to your full name.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== GLOSSARY PAGE ==================== -->
+<section id="glossary" class="hidden pt-16 pb-24 px-4">
+  <div class="max-w-2xl mx-auto fade-in">
+    <button onclick="goBack()" class="text-sm text-gray-500 hover:text-gray-300 mb-4 inline-block">&larr; Back</button>
+    <h2 class="text-3xl font-bold mb-6 flex items-center gap-2">&#128214; Glossary</h2>
+    <div class="space-y-3">
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Opt In</h4><p class="text-sm text-gray-400 mt-1">When you sign up for the NationsBenefits campaign within ShyftOff.</p></div>
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Background Check</h4><p class="text-sm text-gray-400 mt-1">A required screening processed by Yardstik. Does not need to be completed before starting coursework.</p></div>
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Certification Course</h4><p class="text-sm text-gray-400 mt-1">The main training course you complete to learn how to handle NationsBenefits calls. Completing this triggers your credential request and places you on the list for credentials.</p></div>
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Credential Request</h4><p class="text-sm text-gray-400 mt-1">The process where your NationsBenefits login is requested after you complete certification.</p></div>
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Credentials</h4><p class="text-sm text-gray-400 mt-1">Your NationsBenefits username and password &mdash; used to log into their systems.</p></div>
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Pre-Production</h4><p class="text-sm text-gray-400 mt-1">The phase after receiving credentials where you complete the Pre-Production course (your primary setup guide), Litmos trainings, and system access checks.</p></div>
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Pre-Production Course</h4><p class="text-sm text-gray-400 mt-1">Your primary guide for setting up all the NationsBenefits systems and tools you'll use.</p></div>
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Navigation Meeting</h4><p class="text-sm text-gray-400 mt-1">A required guided session that walks you through the NationsBenefits systems. Must be completed after Pre-Production before moving to Production.</p></div>
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Production</h4><p class="text-sm text-gray-400 mt-1">You're live and actively taking calls for NationsBenefits.</p></div>
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">When I Work</h4><p class="text-sm text-gray-400 mt-1">The scheduling app where you view and pick up available shifts.</p></div>
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Litmos</h4><p class="text-sm text-gray-400 mt-1">The platform where you complete security, compliance, and additional training courses.</p></div>
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Rocket Relay</h4><p class="text-sm text-gray-400 mt-1">The messaging app where you communicate with the ShyftOff team and other agents. You'll see rooms for Certification, Pre-Production, and Production in the NationsBenefits campaign.</p></div>
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Ready to Learn (RTL)</h4><p class="text-sm text-gray-400 mt-1">A status that means you're eligible and ready to begin coursework.</p></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="fixed bottom-0 left-0 right-0 bg-dark-800/95 backdrop-blur border-t border-dark-600 z-30" id="footer" style="display:none;">
+  <div class="max-w-3xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-gray-500">
+    <span>ShyftPath &bull; NationsBenefits Agent Roadmap &bull; Updated March 2026</span>
+    <a href="mailto:davidmorales@shyftoff.com?subject=ShyftPath%20Question%20-%20NationsBenefits%20Onboarding&body=Hi%20David%2C%0A%0AI'm%20currently%20in%20Phase%20__%20and%20I%20have%20a%20question%20about...%0A%0A" class="text-teal-400 hover:text-teal-300 transition font-medium">
+      &#9993;&#65039; Email David (Roadmap Creator)
+    </a>
+  </div>
+</footer>
+
+<script>
+// ========== STATE ==========
+let currentQuestion = 0;
+let answers = [];
+let previousPage = 'landing';
+const emailLink = 'mailto:davidmorales@shyftoff.com?subject=ShyftPath%20Question%20-%20NationsBenefits%20Onboarding&body=Hi%20David%2C%0A%0AI\'m%20currently%20in%20Phase%20__%20and%20I%20have%20a%20question%20about...%0A%0A';
+
+const questions = [
+  "Have you applied & opted in to the NationsBenefits campaign in the ShyftOff App?",
+  "Have you submitted your background check (Yardstik)?",
+  "Have you completed the NationsBenefits Certification Coursework?",
+  "Have you received your NationsBenefits login credentials yet?",
+  "Have you finished the Pre-Production course, all required Litmos trainings, and the Self-Guided Navigation course?",
+  "Have you completed your Navigation Meeting?"
+];
+
+// ========== PHASE DATA ==========
+const phases = {
+  1: {
+    name: "Apply & Opt In",
+    emoji: "&#128075;",
+    encouragement: "Welcome aboard! Let's get you started.",
+    percent: 0,
+    whatItMeans: "This is where your journey begins. You apply through ShyftOff and opt in to the NationsBenefits campaign to signal your interest. Opting in tells ShyftOff you want to be considered for the program and triggers the onboarding process.",
+    todo: [
+      "Apply through the ShyftOff App.",
+      "Opt in to the NationsBenefits campaign when prompted."
+    ],
+    timing: "Same day &mdash; this step is quick.",
+    howDone: "You've successfully submitted your application and opted in.",
+    behindScenes: "ShyftOff reviews your opt-in, sets you up for the background check, and prepares your access to certification coursework.",
+    help: "Reach out in <strong>Rocket Relay</strong> in the NationsBenefits campaign &mdash; you'll see rooms for <strong>Certification</strong>, <strong>Pre-Production</strong>, and <strong>Production</strong>. Use whichever fits your current stage.",
+    notes: [],
+    nextAction: "Open the ShyftOff App and apply now!"
+  },
+  2: {
+    name: "Background Check",
+    emoji: "&#128269;",
+    encouragement: "Great start! Submit your background check and keep moving.",
+    percent: 17,
+    whatItMeans: "A background check is required as part of onboarding. This is handled by a service called Yardstik, which verifies your identity and history for this healthcare-related role.",
+    todo: [
+      "Submit and complete your background check when prompted.",
+      "Watch your email (including spam/junk) for a confirmation from Yardstik.",
+      "Move ahead to Phase 3 and begin your Certification Coursework immediately."
+    ],
+    timing: "Usually a few days, but it can vary. Do not wait &mdash; start your coursework immediately.",
+    howDone: "You'll receive a completion email from <strong>Yardstik</strong>. That's your green light!",
+    behindScenes: "Yardstik processes your background check and sends the results. Meanwhile, you should already be working on your certification course.",
+    help: "If your background check seems stuck, reach out in <strong>Rocket Relay</strong> in the NationsBenefits campaign for assistance.",
+    notes: ["<strong>KEY POINT:</strong> You do <strong>NOT</strong> need to wait for the background check to be completed before starting the Certification Course (Phase 3). These two steps run at the same time. Submit your background check and move on to coursework right away."],
+    nextAction: "Submit your background check, then start Phase 3 coursework!"
+  },
+  3: {
+    name: "Certification Coursework",
+    emoji: "&#128218;",
+    encouragement: "You're making progress! Time to learn and get certified.",
+    percent: 33,
+    whatItMeans: "Now it's time to learn! You'll complete the NationsBenefits Certification Course so you're prepared to handle calls. This course covers the systems, processes, policies, and call-handling techniques you'll use every day. Remember &mdash; you do NOT need NationsBenefits credentials for this step, and you do NOT need your background check to be finished. Once you complete certification, your credentials will be requested on your behalf.",
+    todo: [
+      "Access the certification course through the ShyftOff App.",
+      "Complete the entire course within <strong>5 days</strong> of it being assigned.",
+      "Ask questions in <strong>Rocket Relay</strong> in the <strong>Certification</strong> room."
+    ],
+    timing: "Up to 5 days (but many agents finish sooner).",
+    howDone: "You've completed all modules in the certification course.",
+    behindScenes: "Once you finish certification, your NationsBenefits credentials are requested on your behalf. This is what triggers the credential process &mdash; so finishing certification is key! You will be placed on a list, and NationsBenefits will issue your credentials when they are ready.",
+    help: "<strong>Rocket Relay</strong> &mdash; <strong>Certification</strong> room in the NationsBenefits campaign. Ask about course content, technical issues, or deadlines.",
+    notes: [
+      "<strong>IMPORTANT:</strong> After completing the Certification Course, you do <strong>NOT</strong> need to complete any other courses or training. Your only job is to wait for your credentials (Phase 4). The remaining courses (Litmos trainings, Pre-Production course, etc.) come later, after you receive your credentials.",
+      "<strong>Support Sessions:</strong> ShyftOff runs live support sessions during this phase to help bridge any training gaps and tackle technical issues. These sessions are designed to build your confidence before you ever take a live call."
+    ],
+    nextAction: "Open the ShyftOff App and start your certification course!"
+  },
+  4: {
+    name: "Credential Request & Waiting",
+    emoji: "&#9203;",
+    encouragement: "Certification done! Hang tight &mdash; your credentials are on the way.",
+    percent: 50,
+    whatItMeans: "After you finish certification, your NationsBenefits login credentials are requested. You are placed on a list, and NationsBenefits processes requests as they are able to. This is handled by NationsBenefits &mdash; not ShyftOff &mdash; so there's a waiting period you cannot speed up. This is completely normal.",
+    todo: [
+      "Monitor the ShyftOff App daily for updates.",
+      "Check your email &mdash; including your spam/junk folder.",
+      "Be patient. You cannot speed this step up, and that's okay.",
+      "Use this time to review your certification course materials."
+    ],
+    timing: "Up to <strong>7 days</strong> after certification is completed.",
+    howDone: "You receive your NationsBenefits credentials (login information). You're moved into the <strong>Pre-Production</strong> room in Rocket Relay.",
+    behindScenes: "NationsBenefits processes your credential request and creates your login. Once your credentials are delivered, you'll be moved to the Pre-Production phase.",
+    help: "If it's been more than 7 days, ask in <strong>Rocket Relay</strong> in the <strong>Certification</strong> room for a status update.",
+    notes: [],
+    nextAction: "Check your email and ShyftOff App daily &mdash; your credentials will arrive soon!"
+  },
+  5: {
+    name: "Pre-Production",
+    emoji: "&#9881;&#65039;",
+    encouragement: "You have your credentials! Final stretch before going live.",
+    percent: 75,
+    whatItMeans: "You have your credentials! Now it's time to set up your systems, complete security training, and get fully ready to go live. The Pre-Production course is your primary guide for system and tool setup &mdash; it walks you through everything you need to configure.",
+    todo: [
+      "Complete the <strong>Pre-Production Course</strong> &mdash; this is your primary guide for setting up all the systems and tools you'll need. Follow it carefully.",
+      "Complete all required <strong>Litmos training courses</strong> (listed below).",
+      "Complete the <strong>Self-Guided Navigation</strong> course.",
+      "Finish all pre-production requirements within <strong>3 days</strong> of receiving credentials."
+    ],
+    timing: "Within <strong>3 days</strong> of receiving your credentials.",
+    howDone: "All courses are complete (Pre-Production, Litmos, and Self-Guided Navigation). System access is confirmed. You're ready for your <strong>Navigation Meeting</strong> &mdash; the final step before Production.",
+    behindScenes: "Your system access is verified and tested to make sure everything works.",
+    help: "<strong>Rocket Relay</strong> &mdash; <strong>Pre-Production</strong> room in the NationsBenefits campaign. Ask about course content, system setup, or technical access issues.<br><br>For NationsBenefits system/tool issues, call <strong><a href='tel:888-320-1001' class='text-accent-400 hover:text-accent-300'>888-320-1001</a></strong> (NationsBenefits IT).",
+    notes: [
+      "<strong>Support Sessions:</strong> During Pre-Production, ShyftOff also offers live support sessions. Some of these sessions include your first time taking calls with a trainer or support person listening in, guiding you, and assisting you in the moment. You won't be alone &mdash; the goal is to help you feel confident and ready."
+    ],
+    litmosCourses: [
+      "Anti-money Laundering Awareness 4.0 (US)",
+      "Cyber Security Overview 2.0",
+      "Health Risk Assessments (HRAs)",
+      "HIPAA Privacy and Security Basics 5.0 (US)",
+      "Identity Theft Training 2026",
+      "Information Security Basics 3.0",
+      "Leading Learning - Payment Card Industry Data Security Standards (PCI-DSS) 2.0",
+      "Medicare Parts C & D - Combating Fraud, Waste & Abuse 2026",
+      "Medicare Parts C & D - Cultural Competency 2026",
+      "Medicare Parts C & D - General Compliance 2026",
+      "Nations of the Stars - Journey into 2026",
+      "Sexual Harassment Prevention 3.0 (US)",
+      "Triple-S Introduction",
+      "UDAAP Training 2026"
+    ],
+    nextAction: "Start the Pre-Production Course and work through your Litmos trainings!"
+  },
+  6: {
+    name: "Production &mdash; You're Live!",
+    emoji: "&#127881;",
+    encouragement: "Congratulations! You made it &mdash; you're officially in Production!",
+    percent: 100,
+    whatItMeans: "Congratulations! You've completed all the training, your systems are set up, and you're cleared to start taking live calls for NationsBenefits.",
+    todo: [
+      "Log into <strong>When I Work</strong> to view and pick up available shifts.",
+      "Show up on time for your scheduled shifts.",
+      "Use your NationsBenefits credentials to access the systems you need."
+    ],
+    timing: "You're here! Start picking up shifts.",
+    howDone: "Certification completed. Credentials received. Pre-Production course and all Litmos trainings completed. <strong>Navigation Meeting completed.</strong> System access confirmed and tested. When I Work invite received and accepted.",
+    behindScenes: "You've completed every step of the onboarding journey.",
+    help: "Use <strong>Rocket Relay</strong> &mdash; the <strong>Production</strong> room in the NationsBenefits campaign for any questions during live shifts.",
+    notes: [
+      "<strong>REQUIRED BEFORE PRODUCTION:</strong> You must complete your <strong>Navigation Meeting</strong> after finishing all Pre-Production requirements. The Navigation Meeting is a guided walkthrough of the NationsBenefits systems you'll use. You will not be moved to Production until this meeting is complete. After your Navigation Meeting, you'll receive your <strong>When I Work</strong> invite for scheduling."
+    ],
+    nextAction: "Log into When I Work and start picking up shifts!"
+  }
+};
+
+// ========== FUNCTIONS ==========
+function hideAll() {
+  ['landing','quiz','results','checklist','control','support','glossary'].forEach(id => {
+    document.getElementById(id).classList.add('hidden');
+  });
+}
+
+function goToLanding() {
+  hideAll();
+  document.getElementById('landing').classList.remove('hidden');
+  document.getElementById('topProgressBar').classList.add('hidden');
+  document.getElementById('bottomNav').classList.add('hidden');
+  document.getElementById('footer').style.display = 'none';
+  currentQuestion = 0;
+  answers = [];
+  window.scrollTo(0, 0);
+}
+
+function startQuiz() {
+  hideAll();
+  document.getElementById('quiz').classList.remove('hidden');
+  document.getElementById('topProgressBar').classList.add('hidden');
+  document.getElementById('bottomNav').classList.add('hidden');
+  document.getElementById('footer').style.display = 'none';
+  currentQuestion = 0;
+  answers = [];
+  showQuestion();
+  window.scrollTo(0, 0);
+}
+
+function showQuestion() {
+  document.getElementById('questionText').textContent = questions[currentQuestion];
+  document.getElementById('qNum').textContent = currentQuestion + 1;
+  document.getElementById('quizProgress').style.width = ((currentQuestion + 1) / 6 * 100) + '%';
+  const card = document.getElementById('questionCard');
+  card.classList.remove('slide-up');
+  void card.offsetWidth;
+  card.classList.add('slide-up');
+}
+
+function answerQuestion(yes) {
+  answers.push(yes);
+  if (!yes) {
+    // First "No" determines the phase
+    showResults(determinePhase());
+    return;
+  }
+  currentQuestion++;
+  if (currentQuestion >= 6) {
+    showResults(6); // All yes = Production
+    return;
+  }
+  showQuestion();
+}
+
+function determinePhase() {
+  // answers array: [q1, q2, q3, q4, q5, q6]
+  // First "no" determines where they are
+  if (!answers[0]) return 1; // Haven't applied
+  if (answers.length === 2 && !answers[1]) return 2; // Haven't done background check
+  if (answers.length === 3 && !answers[2]) return 3; // Haven't done certification
+  if (answers.length === 4 && !answers[3]) return 4; // Haven't received credentials
+  if (answers.length === 5 && !answers[4]) return 5; // Haven't done pre-production
+  if (answers.length === 6 && !answers[5]) return 5; // Nav meeting is part of getting to 6
+  return 6;
+}
+
+function showResults(phase) {
+  hideAll();
+  document.getElementById('results').classList.remove('hidden');
+  document.getElementById('topProgressBar').classList.remove('hidden');
+  document.getElementById('bottomNav').classList.remove('hidden');
+  document.getElementById('footer').style.display = 'none'; // footer replaced by bottom nav
+
+  const p = phases[phase];
+
+  // Update top progress bar
+  document.getElementById('progressBar').style.width = p.percent + '%';
+  document.getElementById('progressPercent').textContent = p.percent + '%';
+  document.getElementById('progressLabel').textContent = 'Phase ' + phase + ': ' + p.name.replace(/&mdash;/g, '\u2014');
+
+  // Update phase dots
+  document.querySelectorAll('.phase-indicator').forEach(dot => {
+    const dotPhase = parseInt(dot.dataset.phase);
+    if (dotPhase < phase) dot.className = 'inline-block w-2 h-2 rounded-full bg-teal-500 phase-indicator';
+    else if (dotPhase === phase) dot.className = 'inline-block w-3 h-3 rounded-full bg-teal-400 ring-2 ring-teal-400/40 phase-indicator';
+    else dot.className = 'inline-block w-2 h-2 rounded-full bg-dark-600 phase-indicator';
+  });
+
+  // Build results HTML
+  let html = '';
+
+  // Phase badge
+  html += `<div class="text-center mb-8 slide-up">
+    <span class="text-5xl block mb-3">${p.emoji}</span>
+    <div class="inline-block bg-gradient-to-r from-teal-600 to-accent-600 text-white font-bold text-sm px-4 py-1.5 rounded-full mb-3">Phase ${phase} of 6</div>
+    <h2 class="text-2xl sm:text-3xl font-bold mb-2">Phase ${phase}: ${p.name}</h2>
+    <p class="text-teal-400 font-medium">${p.encouragement}</p>
+  </div>`;
+
+  // Progress visualization
+  html += `<div class="bg-dark-800 border border-dark-600 rounded-xl p-4 mb-4">
+    <div class="flex justify-between text-xs text-gray-500 mb-1"><span>Start</span><span>${p.percent}% Complete</span><span>Production</span></div>
+    <div class="w-full bg-dark-600 rounded-full h-3">
+      <div class="progress-fill bg-gradient-to-r from-teal-500 to-accent-500 h-3 rounded-full" style="width:${p.percent}%"></div>
+    </div>
+  </div>`;
+
+  // What it means
+  html += `<div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+    <h3 class="font-bold text-gray-100 mb-2">What this phase means</h3>
+    <p class="text-sm text-gray-400">${p.whatItMeans}</p>
+  </div>`;
+
+  // What you need to do
+  html += `<div class="bg-gradient-to-r from-teal-600/10 to-teal-600/5 border border-teal-500/30 rounded-xl p-5 mb-4">
+    <h3 class="font-bold text-teal-400 mb-3">&#128640; What you need to do right now</h3>
+    <ul class="space-y-2">
+      ${p.todo.map(t => `<li class="flex items-start gap-2 text-sm"><span class="text-teal-400 mt-0.5 flex-shrink-0">&#9632;</span><span>${t}</span></li>`).join('')}
+    </ul>
+  </div>`;
+
+  // Notes
+  if (p.notes.length) {
+    p.notes.forEach(note => {
+      html += `<div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-4">
+        <p class="text-sm text-gray-300">${note}</p>
+      </div>`;
+    });
+  }
+
+  // Litmos courses (Phase 5)
+  if (p.litmosCourses) {
+    html += `<div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+      <h3 class="font-bold text-gray-100 mb-1">Required Litmos Courses</h3>
+      <p class="text-xs text-gray-500 mb-3">Only complete the exact courses on this list &mdash; do not waste time on older versions or courses not listed here. If you can't find a course by its exact name, reach out in Rocket Relay in the Pre-Production room.</p>
+      <ul class="space-y-1.5">
+        ${p.litmosCourses.map(c => `<li class="flex items-start gap-2 text-sm"><span class="text-teal-400 mt-0.5 flex-shrink-0">&#9632;</span><span>${c}</span></li>`).join('')}
+      </ul>
+      <p class="text-xs text-gray-500 mt-3 italic">(Course list accurate as of March 2026. If anything looks different, ask in Rocket Relay.)</p>
+    </div>`;
+  }
+
+  // Timing + How you'll know
+  html += `<div class="grid sm:grid-cols-2 gap-4 mb-4">
+    <div class="bg-dark-800 border border-dark-600 rounded-xl p-4">
+      <h4 class="font-bold text-gray-200 text-sm mb-1">&#9200; Typical timing</h4>
+      <p class="text-sm text-gray-400">${p.timing}</p>
+    </div>
+    <div class="bg-dark-800 border border-dark-600 rounded-xl p-4">
+      <h4 class="font-bold text-gray-200 text-sm mb-1">&#9989; How you'll know you're done</h4>
+      <p class="text-sm text-gray-400">${p.howDone}</p>
+    </div>
+  </div>`;
+
+  // Behind the scenes
+  html += `<div class="bg-dark-800 border border-dark-600 rounded-xl p-4 mb-4">
+    <h4 class="font-bold text-gray-200 text-sm mb-1">&#128065; What happens behind the scenes</h4>
+    <p class="text-sm text-gray-400">${p.behindScenes}</p>
+  </div>`;
+
+  // Where to get help
+  html += `<div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
+    <h3 class="font-bold text-gray-100 mb-2">&#128172; Where to get help</h3>
+    <p class="text-sm text-gray-400 mb-3">${p.help}</p>
+    <a href="mailto:davidmorales@shyftoff.com?subject=ShyftPath%20Question%20-%20NationsBenefits%20Onboarding%20(Phase%20${phase})&body=Hi%20David%2C%0A%0AI'm%20currently%20in%20Phase%20${phase}%20(${encodeURIComponent(p.name.replace(/&mdash;/g, '\u2014'))})%20and%20I%20have%20a%20question%20about...%0A%0A" class="inline-flex items-center gap-2 bg-teal-600/20 hover:bg-teal-600/30 border border-teal-500/30 text-teal-400 font-semibold px-4 py-2 rounded-lg transition text-sm">
+      &#9993;&#65039; Email David (Roadmap Creator)
+    </a>
+  </div>`;
+
+  // Next action
+  html += `<div class="text-center mt-6 space-y-3">
+    <button onclick="alert('${p.nextAction.replace(/'/g, "\\'")}')" class="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-all duration-200 inline-flex items-center gap-2">
+      Next Step: ${phase < 6 ? 'Phase ' + (phase + 1) : 'Pick Up Shifts!'} &#128640;
+    </button>
+    <br>
+    <button onclick="startQuiz()" class="text-sm text-gray-500 hover:text-gray-300 transition">&#128260; Retake Quiz</button>
+    <span class="text-dark-600 mx-2">|</span>
+    <button onclick="goToLanding()" class="text-sm text-gray-500 hover:text-gray-300 transition">&#127968; Home</button>
+  </div>`;
+
+  document.getElementById('resultsContent').innerHTML = html;
+  window.scrollTo(0, 0);
+
+  // Animate progress bar after render
+  setTimeout(() => {
+    document.querySelectorAll('.progress-fill').forEach(el => {
+      el.style.width = el.style.width; // trigger reflow
+    });
+  }, 100);
+}
+
+function showPage(page) {
+  previousPage = getCurrentPage();
+  hideAll();
+  document.getElementById(page).classList.remove('hidden');
+  document.getElementById('topProgressBar').classList.add('hidden');
+  document.getElementById('bottomNav').classList.remove('hidden');
+  document.getElementById('footer').style.display = 'none';
+
+  // Highlight active nav
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.classList.toggle('text-teal-400', btn.dataset.nav === page);
+    btn.classList.toggle('text-gray-400', btn.dataset.nav !== page);
+  });
+
+  window.scrollTo(0, 0);
+}
+
+function getCurrentPage() {
+  const pages = ['landing','quiz','results','checklist','control','support','glossary'];
+  for (const p of pages) {
+    if (!document.getElementById(p).classList.contains('hidden')) return p;
+  }
+  return 'landing';
+}
+
+function goBack() {
+  if (previousPage === 'results') {
+    hideAll();
+    document.getElementById('results').classList.remove('hidden');
+    document.getElementById('topProgressBar').classList.remove('hidden');
+    document.getElementById('bottomNav').classList.remove('hidden');
+  } else {
+    goToLanding();
+  }
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
