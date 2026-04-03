@@ -1,2 +1,9 @@
 NationsBenefits_Agent_Roadmap_UpdatedV2.pdf
 .claude/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
