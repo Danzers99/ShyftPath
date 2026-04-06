@@ -496,6 +496,27 @@ const phases = {
     ],
     nextAction: "Start the Pre-Production Course and work through your Litmos trainings!"
   },
+  '5b': {
+    name: "Navigation Meeting",
+    emoji: "&#128205;",
+    encouragement: "Almost there! You just need your Navigation Meeting.",
+    percent: 90,
+    whatItMeans: "You've completed all your coursework, Litmos trainings, and system setup &mdash; great work! Your <strong>one remaining step</strong> before Production is the <strong>Navigation Meeting</strong>. This is a guided walkthrough of the NationsBenefits systems you'll be using on live calls. Once it's done, you'll be moved to Production.",
+    todo: [
+      "Complete your <strong>Navigation Meeting</strong> &mdash; this is your only remaining step before Production.",
+      "If a meeting has not been scheduled for you yet, reach out in <strong>Rocket Relay</strong> in the <strong>Pre-Production</strong> room to ask when it will be.",
+      "While you wait, review your certification materials and make sure you're comfortable with the call-handling process."
+    ],
+    timing: "The Navigation Meeting is typically scheduled within a few days after your coursework is confirmed complete. If it hasn't been scheduled yet, ask in Rocket Relay.",
+    howDone: "You've completed your Navigation Meeting. After that, Ops will move you to Production and you'll receive your <strong>When I Work</strong> invite for scheduling shifts.",
+    behindScenes: "Ops confirms all your courses are complete and your system access is working. The Navigation Meeting is the final verification that you're ready to handle live calls.",
+    help: "<strong>Rocket Relay</strong> &mdash; <strong>Pre-Production</strong> room in the NationsBenefits campaign. Ask about your Navigation Meeting scheduling or any last-minute questions before going live.<br><br>For NationsBenefits system/tool issues, call <strong><a href='tel:888-320-1001' class='text-accent-400 hover:text-accent-300'>888-320-1001</a></strong> (NationsBenefits IT).",
+    notes: [
+      "<strong>What is the Navigation Meeting?</strong> It's a guided session where someone walks you through the NationsBenefits systems you'll use daily &mdash; Island, Genesys, and the workflows for handling calls. Think of it as your final orientation before going live.",
+      "<strong>After your Navigation Meeting:</strong> Ops will move you from Pre-Production to Production, turn on your When I Work schedule, and you'll be ready to pick up shifts and take live calls."
+    ],
+    nextAction: "Reach out in Rocket Relay to confirm your Navigation Meeting is scheduled!"
+  },
   6: {
     name: "Production &mdash; You're Live!",
     emoji: "&#127881;",
@@ -579,12 +600,12 @@ function answerQuestion(yes) {
 function determinePhase() {
   // answers array: [q1, q2, q3, q4, q5, q6]
   // First "no" determines where they are
-  if (!answers[0]) return 1; // Haven't applied
-  if (answers.length === 2 && !answers[1]) return 2; // Haven't done background check
-  if (answers.length === 3 && !answers[2]) return 3; // Haven't done certification
-  if (answers.length === 4 && !answers[3]) return 4; // Haven't received credentials
-  if (answers.length === 5 && !answers[4]) return 5; // Haven't done pre-production
-  if (answers.length === 6 && !answers[5]) return 5; // Nav meeting is part of getting to 6
+  if (!answers[0]) return 1;    // Haven't applied
+  if (answers.length === 2 && !answers[1]) return 2;  // Haven't done background check
+  if (answers.length === 3 && !answers[2]) return 3;  // Haven't done certification
+  if (answers.length === 4 && !answers[3]) return 4;  // Haven't received credentials
+  if (answers.length === 5 && !answers[4]) return 5;  // Haven't done pre-production coursework
+  if (answers.length === 6 && !answers[5]) return '5b'; // Coursework done, need Navigation Meeting
   return 6;
 }
 
@@ -596,17 +617,20 @@ function showResults(phase) {
   document.getElementById('footer').style.display = 'none'; // footer replaced by bottom nav
 
   const p = phases[phase];
+  const phaseNum = (phase === '5b') ? 5 : phase; // numeric phase for dot indicators
+  const phaseLabel = (phase === '5b') ? 'Phase 5: Navigation Meeting' : 'Phase ' + phase + ': ' + p.name.replace(/&mdash;/g, '\u2014');
+  const phaseBadge = (phase === '5b') ? 'Phase 5 &mdash; Final Step' : 'Phase ' + phase + ' of 6';
 
   // Update top progress bar
   document.getElementById('progressBar').style.width = p.percent + '%';
   document.getElementById('progressPercent').textContent = p.percent + '%';
-  document.getElementById('progressLabel').textContent = 'Phase ' + phase + ': ' + p.name.replace(/&mdash;/g, '\u2014');
+  document.getElementById('progressLabel').textContent = phaseLabel;
 
   // Update phase dots
   document.querySelectorAll('.phase-indicator').forEach(dot => {
     const dotPhase = parseInt(dot.dataset.phase);
-    if (dotPhase < phase) dot.className = 'inline-block w-2 h-2 rounded-full bg-teal-500 phase-indicator';
-    else if (dotPhase === phase) dot.className = 'inline-block w-3 h-3 rounded-full bg-teal-400 ring-2 ring-teal-400/40 phase-indicator';
+    if (dotPhase < phaseNum) dot.className = 'inline-block w-2 h-2 rounded-full bg-teal-500 phase-indicator';
+    else if (dotPhase === phaseNum) dot.className = 'inline-block w-3 h-3 rounded-full bg-teal-400 ring-2 ring-teal-400/40 phase-indicator';
     else dot.className = 'inline-block w-2 h-2 rounded-full bg-dark-600 phase-indicator';
   });
 
@@ -616,8 +640,8 @@ function showResults(phase) {
   // Phase badge
   html += `<div class="text-center mb-8 slide-up">
     <span class="text-5xl block mb-3">${p.emoji}</span>
-    <div class="inline-block bg-gradient-to-r from-teal-600 to-accent-600 text-white font-bold text-sm px-4 py-1.5 rounded-full mb-3">Phase ${phase} of 6</div>
-    <h2 class="text-2xl sm:text-3xl font-bold mb-2">Phase ${phase}: ${p.name}</h2>
+    <div class="inline-block bg-gradient-to-r from-teal-600 to-accent-600 text-white font-bold text-sm px-4 py-1.5 rounded-full mb-3">${phaseBadge}</div>
+    <h2 class="text-2xl sm:text-3xl font-bold mb-2">${phaseLabel}</h2>
     <p class="text-teal-400 font-medium">${p.encouragement}</p>
   </div>`;
 
@@ -686,20 +710,21 @@ function showResults(phase) {
   html += `<div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
     <h3 class="font-bold text-gray-100 mb-2">&#128172; Where to get help</h3>
     <p class="text-sm text-gray-400 mb-3">${p.help}</p>
-    <a href="mailto:davidmorales@shyftoff.com?subject=ShyftPath%20Question%20-%20NationsBenefits%20Onboarding%20(Phase%20${phase})&body=Hi%20David%2C%0A%0AI'm%20currently%20in%20Phase%20${phase}%20(${encodeURIComponent(p.name.replace(/&mdash;/g, '\u2014'))})%20and%20I%20have%20a%20question%20about...%0A%0A" class="inline-flex items-center gap-2 bg-teal-600/20 hover:bg-teal-600/30 border border-teal-500/30 text-teal-400 font-semibold px-4 py-2 rounded-lg transition text-sm">
+    <a href="mailto:davidmorales@shyftoff.com?subject=ShyftPath%20Question%20-%20NationsBenefits%20Onboarding%20(Phase%20${phaseNum})&body=Hi%20David%2C%0A%0AI'm%20currently%20in%20Phase%20${phaseNum}%20(${encodeURIComponent(p.name.replace(/&mdash;/g, '\u2014'))})%20and%20I%20have%20a%20question%20about...%0A%0A" class="inline-flex items-center gap-2 bg-teal-600/20 hover:bg-teal-600/30 border border-teal-500/30 text-teal-400 font-semibold px-4 py-2 rounded-lg transition text-sm">
       &#9993;&#65039; Email David (Roadmap Creator)
     </a>
   </div>`;
 
   // Next action
-  html += `<div class="text-center mt-6 space-y-3">
-    <button onclick="alert('${p.nextAction.replace(/'/g, "\\'")}')" class="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-all duration-200 inline-flex items-center gap-2">
-      Next Step: ${phase < 6 ? 'Phase ' + (phase + 1) : 'Pick Up Shifts!'} &#128640;
-    </button>
-    <br>
-    <button onclick="startQuiz()" class="text-sm text-gray-500 hover:text-gray-300 transition">&#128260; Retake Quiz</button>
-    <span class="text-dark-600 mx-2">|</span>
-    <button onclick="goToLanding()" class="text-sm text-gray-500 hover:text-gray-300 transition">&#127968; Home</button>
+  html += `<div class="text-center mt-6">
+    <div class="bg-dark-800 border border-teal-500/30 rounded-xl p-5 mb-4 text-left">
+      <h4 class="font-bold text-teal-400 mb-2">&#127919; Your Next Move</h4>
+      <p class="text-sm text-gray-300">${p.nextAction}</p>
+    </div>
+    <div class="flex justify-center gap-3">
+      <button onclick="startQuiz()" class="text-sm text-gray-400 hover:text-gray-200 bg-dark-700 hover:bg-dark-600 px-4 py-2 rounded-lg transition">&#128260; Retake Quiz</button>
+      <button onclick="goToLanding()" class="text-sm text-gray-400 hover:text-gray-200 bg-dark-700 hover:bg-dark-600 px-4 py-2 rounded-lg transition">&#127968; Home</button>
+    </div>
   </div>`;
 
   document.getElementById('resultsContent').innerHTML = html;
