@@ -291,8 +291,8 @@ tailwind.config = {
       <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
         <h3 class="font-bold text-teal-400 mb-2">&#128640; Rocket Relay Rooms</h3>
         <ul class="text-sm text-gray-400 space-y-2">
-          <li><strong class="text-gray-200">During Certification:</strong> Rocket Relay &mdash; Certification room</li>
-          <li><strong class="text-gray-200">During Pre-Production:</strong> Rocket Relay &mdash; Pre-Production room</li>
+          <li><strong class="text-gray-200">During Certification:</strong> Rocket Relay &mdash; Roster room</li>
+          <li><strong class="text-gray-200">During Pre-Production:</strong> Rocket Relay &mdash; Nesting room</li>
           <li><strong class="text-gray-200">During Production:</strong> Rocket Relay &mdash; Production room</li>
         </ul>
       </div>
@@ -340,7 +340,7 @@ tailwind.config = {
       <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Production</h4><p class="text-sm text-gray-400 mt-1">You're live and actively taking calls for NationsBenefits.</p></div>
       <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">When I Work</h4><p class="text-sm text-gray-400 mt-1">The scheduling app where you view and pick up available shifts. Sign in at wheniwork.com or through the mobile app using the email your invite was sent to. NationsBenefits hours typically appear 1&ndash;2 business days after your Production move.</p></div>
       <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Litmos</h4><p class="text-sm text-gray-400 mt-1">The platform where you complete security, compliance, and additional training courses.</p></div>
-      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Rocket Relay</h4><p class="text-sm text-gray-400 mt-1">The messaging app where you communicate with the ShyftOff team and other agents. You'll see rooms for Certification, Pre-Production, and Production in the NationsBenefits campaign.</p></div>
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Rocket Relay</h4><p class="text-sm text-gray-400 mt-1">The messaging app where you communicate with the ShyftOff team and other agents. You'll see rooms for Roster, Nesting, and Production in the NationsBenefits campaign.</p></div>
       <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Ready to Learn (RTL)</h4><p class="text-sm text-gray-400 mt-1">A status that means you're eligible and ready to begin coursework.</p></div>
       <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Island</h4><p class="text-sm text-gray-400 mt-1">The secure browser required for accessing NationsBenefits systems. You'll install it during Pre-Production and use it daily in Production. GCBA must be installed and running for Island to pass its security checks.</p></div>
       <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Genesys / GCBA</h4><p class="text-sm text-gray-400 mt-1">The call platform you use to take NationsBenefits calls. GCBA (Genesys Cloud Browser App) must be installed and running on your device. You access Genesys through the Island browser and set your status to Available / On Queue to receive calls.</p></div>
@@ -392,7 +392,7 @@ const phases = {
     timing: "Same day &mdash; this step is quick.",
     howDone: "You've successfully submitted your application and opted in.",
     behindScenes: "ShyftOff reviews your opt-in, sets you up for the background check, and prepares your access to certification coursework.",
-    help: "Reach out in <strong>Rocket Relay</strong> in the NationsBenefits campaign &mdash; you'll see rooms for <strong>Certification</strong>, <strong>Pre-Production</strong>, and <strong>Production</strong>. Use whichever fits your current stage.",
+    help: "Reach out in <strong>Rocket Relay</strong> in the NationsBenefits campaign &mdash; you'll see rooms for <strong>Roster</strong>, <strong>Nesting</strong>, and <strong>Production</strong>. Use whichever fits your current stage.",
     notes: [],
     nextAction: "Open the ShyftOff App and apply now!"
   },
@@ -423,12 +423,12 @@ const phases = {
     todo: [
       "Access the certification course through the ShyftOff App.",
       "Complete the entire course within <strong>5 days</strong> of it being assigned.",
-      "Ask questions in <strong>Rocket Relay</strong> in the <strong>Certification</strong> room."
+      "Ask questions in <strong>Rocket Relay</strong> in the <strong>Roster</strong> room."
     ],
     timing: "Up to 5 days (but many agents finish sooner).",
     howDone: "You've completed all modules in the certification course.",
     behindScenes: "Once you finish certification, your NationsBenefits credentials are requested on your behalf. This is what triggers the credential process &mdash; so finishing certification is key! You will be placed on a list, and NationsBenefits will issue your credentials when they are ready.",
-    help: "<strong>Rocket Relay</strong> &mdash; <strong>Certification</strong> room in the NationsBenefits campaign. Ask about course content, technical issues, or deadlines.",
+    help: "<strong>Rocket Relay</strong> &mdash; <strong>Roster</strong> room in the NationsBenefits campaign. Ask about course content, technical issues, or deadlines.",
     notes: [
       "<strong>IMPORTANT:</strong> After completing the Certification Course, you do <strong>NOT</strong> need to complete any other courses or training. Your only job is to wait for your credentials (Phase 4). The remaining courses (Litmos trainings, Pre-Production course, etc.) come later, after you receive your credentials.",
       "<strong>Support Sessions:</strong> ShyftOff runs live support sessions during this phase to help bridge any training gaps and tackle technical issues. These sessions are designed to build your confidence before you ever take a live call."
@@ -448,9 +448,9 @@ const phases = {
       "Use this time to review your certification course materials."
     ],
     timing: "Up to <strong>7 days</strong> after certification is completed.",
-    howDone: "You receive your NationsBenefits credentials (login information). You're moved into the <strong>Pre-Production</strong> room in Rocket Relay.",
+    howDone: "You receive your NationsBenefits credentials (login information). You're moved into the <strong>Nesting</strong> room in Rocket Relay.",
     behindScenes: "NationsBenefits processes your credential request and creates your login. Once your credentials are delivered, you'll be moved to the Pre-Production phase.",
-    help: "If it's been more than 7 days, ask in <strong>Rocket Relay</strong> in the <strong>Certification</strong> room for a status update.",
+    help: "If it's been more than 7 days, ask in <strong>Rocket Relay</strong> in the <strong>Roster</strong> room for a status update.",
     notes: [],
     nextAction: "Check your email and ShyftOff App daily &mdash; your credentials will arrive soon!"
   },
@@ -471,7 +471,7 @@ const phases = {
     timing: "Within <strong>3 days</strong> of receiving your credentials.",
     howDone: "All courses are complete (Pre-Production, Litmos, and Self-Guided Navigation). System access is confirmed. You're ready for your <strong>Navigation Meeting</strong> &mdash; the final step before Production.",
     behindScenes: "Your system access is verified and tested to make sure everything works.",
-    help: "<strong>Rocket Relay</strong> &mdash; <strong>Pre-Production</strong> room in the NationsBenefits campaign. Ask about course content, system setup, or technical access issues.<br><br>For NationsBenefits system/tool issues, call <strong><a href='tel:888-320-1001' class='text-accent-400 hover:text-accent-300'>888-320-1001</a></strong> (NationsBenefits IT).",
+    help: "<strong>Rocket Relay</strong> &mdash; <strong>Nesting</strong> room in the NationsBenefits campaign. Ask about course content, system setup, or technical access issues.<br><br>For NationsBenefits system/tool issues, call <strong><a href='tel:888-320-1001' class='text-accent-400 hover:text-accent-300'>888-320-1001</a></strong> (NationsBenefits IT).",
     notes: [
       "<strong>Support Sessions:</strong> During Pre-Production, ShyftOff also offers live support sessions. Some of these sessions include your first time taking calls with a trainer or support person listening in, guiding you, and assisting you in the moment. You won't be alone &mdash; the goal is to help you feel confident and ready.",
       "<strong>After you finish Litmos + tech setup:</strong> Ops will verify that all assigned courses are 100% complete and that you can log into Island and Genesys. Once confirmed, they'll move you from training to Production and turn on your When I Work schedule. This usually happens within a few days.",
@@ -504,13 +504,13 @@ const phases = {
     whatItMeans: "You've completed all your coursework, Litmos trainings, and system setup &mdash; great work! Your <strong>one remaining step</strong> before Production is the <strong>Navigation Meeting</strong>. This is a guided walkthrough of the NationsBenefits systems you'll be using on live calls. Once it's done, you'll be moved to Production.",
     todo: [
       "Complete your <strong>Navigation Meeting</strong> &mdash; this is your only remaining step before Production.",
-      "If a meeting has not been scheduled for you yet, reach out in <strong>Rocket Relay</strong> in the <strong>Pre-Production</strong> room to ask when it will be.",
+      "If a meeting has not been scheduled for you yet, reach out in <strong>Rocket Relay</strong> in the <strong>Nesting</strong> room to ask when it will be.",
       "While you wait, review your certification materials and make sure you're comfortable with the call-handling process."
     ],
     timing: "The Navigation Meeting is typically scheduled within a few days after your coursework is confirmed complete. If it hasn't been scheduled yet, ask in Rocket Relay.",
     howDone: "You've completed your Navigation Meeting. After that, Ops will move you to Production and you'll receive your <strong>When I Work</strong> invite for scheduling shifts.",
     behindScenes: "Ops confirms all your courses are complete and your system access is working. The Navigation Meeting is the final verification that you're ready to handle live calls.",
-    help: "<strong>Rocket Relay</strong> &mdash; <strong>Pre-Production</strong> room in the NationsBenefits campaign. Ask about your Navigation Meeting scheduling or any last-minute questions before going live.<br><br>For NationsBenefits system/tool issues, call <strong><a href='tel:888-320-1001' class='text-accent-400 hover:text-accent-300'>888-320-1001</a></strong> (NationsBenefits IT).",
+    help: "<strong>Rocket Relay</strong> &mdash; <strong>Nesting</strong> room in the NationsBenefits campaign. Ask about your Navigation Meeting scheduling or any last-minute questions before going live.<br><br>For NationsBenefits system/tool issues, call <strong><a href='tel:888-320-1001' class='text-accent-400 hover:text-accent-300'>888-320-1001</a></strong> (NationsBenefits IT).",
     notes: [
       "<strong>What is the Navigation Meeting?</strong> It's a guided session where someone walks you through the NationsBenefits systems you'll use daily &mdash; Island, Genesys, and the workflows for handling calls. Think of it as your final orientation before going live.",
       "<strong>After your Navigation Meeting:</strong> Ops will move you from Pre-Production to Production, turn on your When I Work schedule, and you'll be ready to pick up shifts and take live calls."
@@ -680,7 +680,7 @@ function showResults(phase) {
   if (p.litmosCourses) {
     html += `<div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
       <h3 class="font-bold text-gray-100 mb-1">Required Litmos Courses</h3>
-      <p class="text-xs text-gray-500 mb-3">Only complete the exact courses on this list &mdash; do not waste time on older versions or courses not listed here. If you can't find a course by its exact name, reach out in Rocket Relay in the Pre-Production room.</p>
+      <p class="text-xs text-gray-500 mb-3">Only complete the exact courses on this list &mdash; do not waste time on older versions or courses not listed here. If you can't find a course by its exact name, reach out in Rocket Relay in the Nesting room.</p>
       <ul class="space-y-1.5">
         ${p.litmosCourses.map(c => `<li class="flex items-start gap-2 text-sm"><span class="text-teal-400 mt-0.5 flex-shrink-0">&#9632;</span><span>${c}</span></li>`).join('')}
       </ul>
