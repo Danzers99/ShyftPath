@@ -10,9 +10,18 @@ tailwind.config = {
   theme: {
     extend: {
       colors: {
-        dark: { 900: '#0b1120', 800: '#111827', 700: '#1e293b', 600: '#334155' },
-        teal: { 400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488' },
-        accent: { 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7' }
+        /* Brand palette (ShyftOff/NationsBenefits) */
+        dark:   { 900: '#1a0a2e', 800: '#27133A', 700: '#4D1F3B', 600: '#5a2d4f' },
+        /* teal-* tokens now carry the primary purple family */
+        teal:   { 400: '#8F68D3', 500: '#794EC2', 600: '#6b3fb5' },
+        /* accent-* tokens now carry the warm (orange/pink) family */
+        accent: { 400: '#FF7866', 500: '#FF66C4', 600: '#e94aa5' },
+        solar:  { 400: '#FFE566' },
+        haze:   { 400: '#E8DFF6' },
+        /* warning/caution tint = Solar Flare */
+        yellow: { 400: '#FFE566', 500: '#f5d74a' },
+        /* red-ish for "Not in your control" = Nebula Pink */
+        red:    { 400: '#FF66C4', 500: '#e94aa5' }
       }
     }
   }
@@ -24,15 +33,16 @@ tailwind.config = {
   .fade-in { animation: fadeIn 0.4s ease-out; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
   .pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
-  @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.4); } 50% { box-shadow: 0 0 20px 4px rgba(20, 184, 166, 0.2); } }
+  @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(143, 104, 211, 0.45); } 50% { box-shadow: 0 0 22px 6px rgba(255, 120, 102, 0.25); } }
   .progress-fill { transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
   .slide-up { animation: slideUp 0.5s ease-out; }
   @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
   .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
   .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
   ::-webkit-scrollbar { width: 8px; }
-  ::-webkit-scrollbar-track { background: #111827; }
-  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  ::-webkit-scrollbar-track { background: #27133A; }
+  ::-webkit-scrollbar-thumb { background: #794EC2; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #8F68D3; }
   .fab-email { position: fixed; bottom: 24px; right: 24px; z-index: 50; }
 </style>
 </head>
@@ -93,7 +103,7 @@ tailwind.config = {
     <div class="mb-6">
       <span class="text-6xl sm:text-7xl">&#128640;</span>
     </div>
-    <h1 class="text-4xl sm:text-5xl font-extrabold mb-3 bg-gradient-to-r from-teal-400 to-accent-400 bg-clip-text text-transparent">ShyftPath</h1>
+    <h1 class="text-4xl sm:text-5xl font-extrabold mb-3 bg-gradient-to-r from-teal-400 via-accent-500 to-accent-400 bg-clip-text text-transparent">ShyftPath</h1>
     <p class="text-lg sm:text-xl text-gray-300 font-medium mb-2">NationsBenefits Agent Journey Tracker</p>
     <p class="text-gray-400 mb-8 max-w-lg mx-auto">Find exactly where you are in the NationsBenefits onboarding process. Answer 6 quick yes/no questions and we'll tell you your current phase + exactly what to do next.</p>
 
@@ -160,6 +170,17 @@ tailwind.config = {
     <button onclick="goBack()" class="text-sm text-gray-500 hover:text-gray-300 mb-4 inline-block">&larr; Back</button>
     <h2 class="text-3xl font-bold mb-2 flex items-center gap-2">&#9745;&#65039; Full Checklist</h2>
     <p class="text-gray-400 mb-6">Track your progress from start to finish.</p>
+
+    <!-- Rocket Relay channel map -->
+    <div class="bg-gradient-to-r from-teal-600/15 to-accent-500/10 border border-teal-400/30 rounded-xl p-4 mb-6">
+      <h3 class="font-bold text-teal-400 mb-2 text-sm">&#128640; Which Rocket Relay room are you in?</h3>
+      <ul class="text-sm text-gray-300 space-y-1">
+        <li><span class="font-semibold text-haze-400">Pre-Roster</span> &rarr; Phases 1&ndash;2 (before background check is purchased)</li>
+        <li><span class="font-semibold text-haze-400">Roster</span> &rarr; Phases 3&ndash;4 (certification &amp; waiting for credentials)</li>
+        <li><span class="font-semibold text-haze-400">Nesting</span> &rarr; Phase 5 (Pre-Production setup &amp; training)</li>
+        <li><span class="font-semibold text-haze-400">Production</span> &rarr; Phase 6 (live, taking calls)</li>
+      </ul>
+    </div>
 
     <!-- Phase 1 -->
     <div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-4">
@@ -294,9 +315,10 @@ tailwind.config = {
       <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
         <h3 class="font-bold text-teal-400 mb-2">&#128640; Rocket Relay Rooms</h3>
         <ul class="text-sm text-gray-400 space-y-2">
-          <li><strong class="text-gray-200">During Certification:</strong> Rocket Relay &mdash; Roster room</li>
-          <li><strong class="text-gray-200">During Pre-Production:</strong> Rocket Relay &mdash; Nesting room</li>
-          <li><strong class="text-gray-200">During Production:</strong> Rocket Relay &mdash; Production room</li>
+          <li><strong class="text-gray-200">Pre-Roster room:</strong> Agents in the NationsBenefits campaign who have <em>not yet purchased</em> their background check.</li>
+          <li><strong class="text-gray-200">Roster room:</strong> Certification coursework + credential request &amp; waiting.</li>
+          <li><strong class="text-gray-200">Nesting room:</strong> Pre-Production setup, Litmos trainings, and Navigation Meeting scheduling.</li>
+          <li><strong class="text-gray-200">Production room:</strong> You're live &mdash; any questions during live shifts.</li>
         </ul>
       </div>
 
@@ -343,11 +365,13 @@ tailwind.config = {
       <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Production</h4><p class="text-sm text-gray-400 mt-1">You're live and actively taking calls for NationsBenefits.</p></div>
       <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">When I Work</h4><p class="text-sm text-gray-400 mt-1">The scheduling app where you view and pick up available shifts. Sign in at wheniwork.com or through the mobile app using the email your invite was sent to. NationsBenefits hours typically appear 1&ndash;2 business days after your Production move.</p></div>
       <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Litmos</h4><p class="text-sm text-gray-400 mt-1">The platform where you complete security, compliance, and additional training courses.</p></div>
-      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Rocket Relay</h4><p class="text-sm text-gray-400 mt-1">The messaging app where you communicate with the ShyftOff team and other agents. You'll see rooms for Roster, Nesting, and Production in the NationsBenefits campaign.</p></div>
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Rocket Relay</h4><p class="text-sm text-gray-400 mt-1">The messaging app where you communicate with the ShyftOff team and other agents. You'll see rooms for Pre-Roster, Roster, Nesting, and Production in the NationsBenefits campaign.</p></div>
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Pre-Roster</h4><p class="text-sm text-gray-400 mt-1">The Rocket Relay room for agents who are in the NationsBenefits campaign but have not yet purchased their background check. Once you purchase your background check and begin certification, you'll move to the Roster room.</p></div>
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Roster</h4><p class="text-sm text-gray-400 mt-1">The Rocket Relay room for agents in Certification Coursework and Credential Request &amp; Waiting. (Formerly known as the Certification room.)</p></div>
       <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Ready to Learn (RTL)</h4><p class="text-sm text-gray-400 mt-1">A status that means you're eligible and ready to begin coursework.</p></div>
       <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Island</h4><p class="text-sm text-gray-400 mt-1">The secure browser required for accessing NationsBenefits systems. You'll install it during Pre-Production and use it daily in Production. GCBA must be installed and running for Island to pass its security checks.</p></div>
       <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Genesys / GCBA</h4><p class="text-sm text-gray-400 mt-1">The call platform you use to take NationsBenefits calls. GCBA (Genesys Cloud Browser App) must be installed and running on your device. You access Genesys through the Island browser and set your status to Available / On Queue to receive calls.</p></div>
-      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Nesting</h4><p class="text-sm text-gray-400 mt-1">The brief transition period between completing training and full Production. During nesting, your performance is monitored closely. You leave nesting when Litmos is 100% complete, tech is confirmed working, and early performance is acceptable.</p></div>
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-4"><h4 class="font-bold text-teal-400 text-sm">Nesting</h4><p class="text-sm text-gray-400 mt-1">The Rocket Relay room for agents in Pre-Production setup, Litmos trainings, and Navigation Meeting scheduling. (Formerly known as the Pre-Production room.) It's also the brief transition period between completing training and full Production &mdash; your performance is monitored closely until Litmos is 100% complete, tech is confirmed working, and early performance is acceptable.</p></div>
     </div>
   </div>
 </section>
@@ -395,7 +419,7 @@ const phases = {
     timing: "Same day &mdash; this step is quick.",
     howDone: "You've successfully submitted your application and opted in.",
     behindScenes: "ShyftOff reviews your opt-in, sets you up for the background check, and prepares your access to certification coursework.",
-    help: "Reach out in <strong>Rocket Relay</strong> in the NationsBenefits campaign &mdash; you'll see rooms for <strong>Roster</strong>, <strong>Nesting</strong>, and <strong>Production</strong>. Use whichever fits your current stage.",
+    help: "Since you haven't purchased your background check yet, you belong in the <strong>Pre-Roster</strong> room in <strong>Rocket Relay</strong>. You can also see rooms for <strong>Roster</strong>, <strong>Nesting</strong>, and <strong>Production</strong> as you progress.",
     notes: [],
     nextAction: "Open the ShyftOff App and apply now!"
   },
@@ -413,7 +437,7 @@ const phases = {
     timing: "Usually a few days, but it can vary. Do not wait &mdash; start your coursework immediately.",
     howDone: "You'll receive a completion email from <strong>Yardstik</strong>. That's your green light!",
     behindScenes: "Yardstik processes your background check and sends the results. Meanwhile, you should already be working on your certification course.",
-    help: "If your background check seems stuck, reach out in <strong>Rocket Relay</strong> in the NationsBenefits campaign for assistance.",
+    help: "Until your background check is purchased, you're in the <strong>Pre-Roster</strong> room. Once it's purchased and you're working on certification, you'll move to the <strong>Roster</strong> room. If your background check seems stuck, reach out in <strong>Rocket Relay</strong> for assistance.",
     notes: ["<strong>KEY POINT:</strong> You do <strong>NOT</strong> need to wait for the background check to be completed before starting the Certification Course (Phase 3). These two steps run at the same time. Submit your background check and move on to coursework right away."],
     nextAction: "Submit your background check, then start Phase 3 coursework!"
   },
